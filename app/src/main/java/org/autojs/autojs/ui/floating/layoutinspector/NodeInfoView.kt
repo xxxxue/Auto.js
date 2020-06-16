@@ -14,6 +14,7 @@ import com.stardust.util.ClipboardUtil
 import com.stardust.util.sortedArrayOf
 import com.stardust.view.accessibility.NodeInfo
 import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration
+
 import org.autojs.autojs.R
 import java.lang.reflect.Field
 

@@ -55,17 +55,17 @@ public class GlobalConsole extends ConsoleImpl {
     private String getLevelChar(int level) {
         switch (level) {
             case android.util.Log.VERBOSE:
-                return "V";
+                return "Verbose";
             case android.util.Log.DEBUG:
-                return "D";
+                return "Debug";
             case android.util.Log.INFO:
-                return "I";
+                return "Info";
             case android.util.Log.WARN:
-                return "W";
+                return "Warn";
             case android.util.Log.ERROR:
-                return "E";
+                return "Error";
             case android.util.Log.ASSERT:
-                return "A";
+                return "Assert";
 
         }
         return "";

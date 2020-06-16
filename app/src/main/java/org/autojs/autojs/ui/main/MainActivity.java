@@ -4,23 +4,20 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import androidx.core.view.GravityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.widget.Toolbar;
-import androidx.viewpager.widget.ViewPager;
-
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.stardust.app.FragmentPagerAdapterBuilder;
 import com.stardust.app.OnActivityResultDelegate;
@@ -64,32 +61,49 @@ import org.greenrobot.eventbus.Subscribe;
 
 import java.util.Arrays;
 
+/**
+ * 首页
+ */
 @EActivity(R.layout.activity_main)
 public class MainActivity extends BaseActivity implements OnActivityResultDelegate.DelegateHost, BackPressedHandler.HostActivity, PermissionRequestProxyActivity {
 
+
+    private final String LOG_TAG = this.getClass().getName();
+
+    /**
+     * 抽屉开启事件
+     */
     public static class DrawerOpenEvent {
         static DrawerOpenEvent SINGLETON = new DrawerOpenEvent();
     }
 
-    private static final String LOG_TAG = "MainActivity";
 
+    /**
+     * 首页 layout 总容器
+     */
     @ViewById(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
+    /**
+     * 首页 内容显示区域
+     */
     @ViewById(R.id.viewpager)
     ViewPager mViewPager;
 
+    /**
+     * 右下角 "+" 号
+     */
     @ViewById(R.id.fab)
     FloatingActionButton mFab;
 
     private FragmentPagerAdapterBuilder.StoredFragmentPagerAdapter mPagerAdapter;
-    private OnActivityResultDelegate.Mediator mActivityResultMediator = new OnActivityResultDelegate.Mediator();
-    private RequestPermissionCallbacks mRequestPermissionCallbacks = new RequestPermissionCallbacks();
-    private VersionGuard mVersionGuard;
-    private BackPressedHandler.Observer mBackPressObserver = new BackPressedHandler.Observer();
-    private SearchViewItem mSearchViewItem;
-    private MenuItem mLogMenuItem;
-    private boolean mDocsSearchItemExpanded;
+    private OnActivityResultDelegate.Mediator                      mActivityResultMediator     = new OnActivityResultDelegate.Mediator();
+    private RequestPermissionCallbacks                             mRequestPermissionCallbacks = new RequestPermissionCallbacks();
+    private VersionGuard                                           mVersionGuard;
+    private BackPressedHandler.Observer                            mBackPressObserver          = new BackPressedHandler.Observer();
+    private SearchViewItem                                         mSearchViewItem;
+    private MenuItem                                               mLogMenuItem;
+    private boolean                                                mDocsSearchItemExpanded;
 
 
     @Override
@@ -119,6 +133,9 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         });
     }
 
+    /**
+     * 如果需要 显示通告 (首页 的 声明 文字)
+     */
     private void showAnnunciationIfNeeded() {
         if (!Pref.shouldShowAnnunciation()) {
             return;
@@ -132,16 +149,24 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
                 .show();
     }
 
-
+    /**
+     * 注册返回 处理程序
+     */
     private void registerBackPressHandlers() {
         mBackPressObserver.registerHandler(new DrawerAutoClose(mDrawerLayout, Gravity.START));
         mBackPressObserver.registerHandler(new BackPressedHandler.DoublePressExit(this, R.string.text_press_again_to_exit));
     }
 
+    /**
+     * 检查权限
+     */
     private void checkPermissions() {
         checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
+    /**
+     * 如果禁用，则显示辅助功能 设置提示
+     */
     private void showAccessibilitySettingPromptIfDisabled() {
         if (AccessibilityServiceTool.isAccessibilityServiceEnabled(this)) {
             return;
@@ -156,6 +181,9 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
                 ).show();
     }
 
+    /**
+     * 设置工具栏
+     */
     private void setUpToolbar() {
         Toolbar toolbar = $(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -166,6 +194,9 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         mDrawerLayout.addDrawerListener(drawerToggle);
     }
 
+    /**
+     * 设置 标签页Tab  查看页面
+     */
     private void setUpTabViewPager() {
         TabLayout tabLayout = $(R.id.tab);
         mPagerAdapter = new FragmentPagerAdapterBuilder(this)
@@ -180,6 +211,9 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         setUpViewPagerFragmentBehaviors();
     }
 
+    /**
+     * 设置查看寻呼机片段行为 (切换 tab)
+     */
     private void setUpViewPagerFragmentBehaviors() {
         mPagerAdapter.setOnFragmentInstantiateListener((pos, fragment) -> {
             ((ViewPagerFragment) fragment).setFab(mFab);
@@ -204,12 +238,18 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         });
     }
 
-
+    /**
+     * 打开 设置页面
+     */
     @Click(R.id.setting)
     void startSettingActivity() {
-        startActivity(new Intent(this, SettingsActivity_.class));
+
+         startActivity(new Intent(this, SettingsActivity_.class));
     }
 
+    /**
+     * 退出程序
+     */
     @Click(R.id.exit)
     public void exitCompletely() {
         finish();
@@ -235,6 +275,12 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         mActivityResultMediator.onActivityResult(requestCode, resultCode, data);
     }
 
+    /**
+     *  请求权限结果
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -246,6 +292,13 @@ public class MainActivity extends BaseActivity implements OnActivityResultDelega
         }
     }
 
+    /**
+     * 获取授予的 结果
+     * @param permission
+     * @param permissions
+     * @param grantResults
+     * @return
+     */
     private int getGrantResult(String permission, String[] permissions, int[] grantResults) {
         int i = Arrays.asList(permissions).indexOf(permission);
         if (i < 0) {

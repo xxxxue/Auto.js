@@ -30,10 +30,10 @@ import java.io.File;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 
-/**
- * Created by Stardust on 2017/4/9.
- */
 
+/**
+ * 更新app  对话框
+ */
 public class UpdateInfoDialogBuilder extends MaterialDialog.Builder {
 
     private static final String KEY_DO_NOT_ASK_AGAIN_FOR_VERSION = "I cannot forget you...cannot help missing you...";
@@ -47,6 +47,11 @@ public class UpdateInfoDialogBuilder extends MaterialDialog.Builder {
         updateInfo(info);
     }
 
+    /**
+     * 更新信息
+     * @param info
+     * @return
+     */
     public UpdateInfoDialogBuilder updateInfo(VersionInfo info) {
         mVersionInfo = info;
         mView = View.inflate(context, R.layout.dialog_update_info, null);
@@ -58,6 +63,10 @@ public class UpdateInfoDialogBuilder extends MaterialDialog.Builder {
         return this;
     }
 
+    /**
+     * 显示不再询问
+     * @return
+     */
     public UpdateInfoDialogBuilder showDoNotAskAgain() {
         mView.findViewById(R.id.do_not_ask_again_container).setVisibility(View.VISIBLE);
         CheckBox checkBox = (CheckBox) mView.findViewById(R.id.do_not_ask_again);
@@ -78,6 +87,11 @@ public class UpdateInfoDialogBuilder extends MaterialDialog.Builder {
         return super.show();
     }
 
+    /**
+     * 设置当前版本问题
+     * @param view
+     * @param info
+     */
     private void setCurrentVersionIssues(View view, VersionInfo info) {
         TextView issues = (TextView) view.findViewById(R.id.issues);
         VersionInfo.OldVersion currentVersion = info.getOldVersion(BuildConfig.VERSION_CODE);
@@ -88,6 +102,11 @@ public class UpdateInfoDialogBuilder extends MaterialDialog.Builder {
         }
     }
 
+    /**
+     * 设置更新下载按钮
+     * @param view
+     * @param info
+     */
     private void setUpdateDownloadButtons(View view, VersionInfo info) {
         LinearLayout downloads = (LinearLayout) view.findViewById(R.id.downloads);
         setDirectlyDownloadButton(downloads, info);
@@ -104,6 +123,11 @@ public class UpdateInfoDialogBuilder extends MaterialDialog.Builder {
         }
     }
 
+    /**
+     * 设置直接下载按钮
+     * @param container
+     * @param info
+     */
     private void setDirectlyDownloadButton(LinearLayout container, final VersionInfo info) {
         if (TextUtils.isEmpty(info.downloadUrl)) {
             return;
@@ -114,6 +138,10 @@ public class UpdateInfoDialogBuilder extends MaterialDialog.Builder {
         container.addView(button);
     }
 
+    /**
+     * 直接下载
+     * @param downloadUrl
+     */
     @SuppressLint("CheckResult")
     private void directlyDownload(String downloadUrl) {
         final String path = new File(Pref.getScriptDirPath(), "AutoJs.apk").getPath();
@@ -127,7 +155,11 @@ public class UpdateInfoDialogBuilder extends MaterialDialog.Builder {
 
     }
 
-
+    /**
+     * 设置发行说明
+     * @param view
+     * @param info
+     */
     private void setReleaseNotes(View view, VersionInfo info) {
         CommonMarkdownView markdownView = view.findViewById(R.id.release_notes);
         markdownView.loadMarkdown(info.releaseNotes);

@@ -101,7 +101,8 @@ object Scripts {
 
     fun run(file: ScriptFile): ScriptExecution? {
         return try {
-            AutoJs.getInstance().scriptEngineService.execute(file.toSource(),
+            AutoJs.getInstance()
+                    .scriptEngineService.execute(file.toSource(),
                     ExecutionConfig(workingDirectory = file.parent))
         } catch (e: Exception) {
             e.printStackTrace()

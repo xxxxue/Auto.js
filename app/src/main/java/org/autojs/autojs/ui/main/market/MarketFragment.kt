@@ -14,13 +14,13 @@ import kotlinx.android.synthetic.main.fragment_market.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.autojs.autojs.R
 import org.autojs.autojs.network.TopicService
 import org.autojs.autojs.network.entity.topic.AppInfo
 import org.autojs.autojs.network.entity.topic.Post
 import org.autojs.autojs.network.entity.topic.Topic
 import org.autojs.autojs.ui.main.ViewPagerFragment
 import org.autojs.autojs.ui.widget.AvatarView
+import org.autojs.autojs.R
 import org.joda.time.format.DateTimeFormat
 
 class MarketFragment : ViewPagerFragment(0) {

@@ -150,24 +150,45 @@ public class Pref {
         return def().getString(KEY_EDITOR_THEME, null);
     }
 
+    /**
+     * 设置当前主题
+     * @param theme
+     */
     public static void setCurrentTheme(String theme) {
         def().edit().putString(KEY_EDITOR_THEME, theme).apply();
     }
 
+    /**
+     * 设置编辑器文字大小
+     * @param value
+     */
     public static void setEditorTextSize(int value) {
         def().edit().putInt(KEY_EDITOR_TEXT_SIZE, value).apply();
     }
 
+    /**
+     * 获取编辑器文本大小
+     * @param defValue
+     * @return
+     */
     public static int getEditorTextSize(int defValue) {
         return def().getInt(KEY_EDITOR_TEXT_SIZE, defValue);
     }
 
+    /**
+     * 获取 脚本 文件夹 地址
+     * @return
+     */
     public static String getScriptDirPath() {
         String dir = def().getString(getString(R.string.key_script_dir_path),
                 getString(R.string.default_value_script_dir_path));
         return new File(Environment.getExternalStorageDirectory(), dir).getPath();
     }
 
+    /**
+     * 启用了前台服务
+     * @return
+     */
     public static boolean isForegroundServiceEnabled() {
         return def().getBoolean(getString(R.string.key_foreground_servie), false);
     }

@@ -38,6 +38,7 @@ open class RhinoJavaScriptEngine(private val mAndroidContext: android.content.Co
         get() {
             return sInitScript ?: {
                 try {
+                    //读取 用于初始化 的 js
                     val reader = InputStreamReader(mAndroidContext.assets.open("init.js"))
                     val script = context.compileReader(reader, SOURCE_NAME_INIT, 1, null)
                     sInitScript = script

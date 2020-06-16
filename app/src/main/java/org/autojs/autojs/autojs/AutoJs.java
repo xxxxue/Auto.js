@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Looper;
+
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.stardust.app.GlobalAppContext;
@@ -15,24 +16,23 @@ import com.stardust.autojs.runtime.accessibility.AccessibilityConfig;
 import com.stardust.autojs.runtime.api.AppUtils;
 import com.stardust.autojs.runtime.exception.ScriptException;
 import com.stardust.autojs.runtime.exception.ScriptInterruptedException;
+import com.stardust.view.accessibility.AccessibilityService;
+import com.stardust.view.accessibility.LayoutInspector;
+import com.stardust.view.accessibility.NodeInfo;
 
 import org.autojs.autojs.BuildConfig;
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
 import org.autojs.autojs.external.fileprovider.AppFileProvider;
 import org.autojs.autojs.pluginclient.DevPluginService;
+import org.autojs.autojs.tool.AccessibilityServiceTool;
 import org.autojs.autojs.ui.floating.FloatyWindowManger;
 import org.autojs.autojs.ui.floating.FullScreenFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutBoundsFloatyWindow;
 import org.autojs.autojs.ui.floating.layoutinspector.LayoutHierarchyFloatyWindow;
 import org.autojs.autojs.ui.log.LogActivity_;
+
 import org.autojs.autojs.ui.settings.SettingsActivity_;
-
-import com.stardust.view.accessibility.AccessibilityService;
-import com.stardust.view.accessibility.LayoutInspector;
-import com.stardust.view.accessibility.NodeInfo;
-
-import org.autojs.autojs.tool.AccessibilityServiceTool;
 
 
 /**
@@ -41,7 +41,8 @@ import org.autojs.autojs.tool.AccessibilityServiceTool;
 
 public class AutoJs extends com.stardust.autojs.AutoJs {
 
-    private static AutoJs instance;
+    private static AutoJs      instance;
+    private static Application sApplication;
 
     public static AutoJs getInstance() {
         return instance;
@@ -52,6 +53,7 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
         if (instance != null) {
             return;
         }
+        sApplication = application;
         instance = new AutoJs(application);
     }
 
@@ -77,6 +79,11 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
             }
         }
     };
+
+    public AutoJs() {
+        super(sApplication);
+
+    }
 
     private AutoJs(final Application application) {
         super(application);
@@ -121,6 +128,9 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
         };
     }
 
+    /**
+     * 确保启用辅助功能
+     */
     public void ensureAccessibilityServiceEnabled() {
         if (AccessibilityService.Companion.getInstance() != null) {
             return;
@@ -143,6 +153,9 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
         }
     }
 
+    /**
+     * 等待 无障碍服务 开启
+     */
     @Override
     public void waitForAccessibilityServiceEnabled() {
         if (AccessibilityService.Companion.getInstance() != null) {
@@ -187,4 +200,12 @@ public class AutoJs extends com.stardust.autojs.AutoJs {
         return runtime;
     }
 
+    /**
+     * aj 所有的对外接口
+     *
+     * @return
+     */
+    public ScriptRuntime getRuntime() {
+        return createRuntime();
+    }
 }

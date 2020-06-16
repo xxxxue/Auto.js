@@ -61,6 +61,9 @@ open class AssetsProjectLauncher(private val mAssetsProjectDir: String, private 
         }
     }
 
+    /**
+     * 运行脚本
+     */
     private fun runScript(activity: Activity?) {
         if (mScriptExecution != null && mScriptExecution!!.engine != null &&
                 !mScriptExecution!!.engine.isDestroyed) {
@@ -81,6 +84,9 @@ open class AssetsProjectLauncher(private val mAssetsProjectDir: String, private 
 
     }
 
+    /**
+     * 准备
+     */
     private fun prepare() {
         val projectConfigPath = PFiles.join(mProjectDir, ProjectConfig.CONFIG_FILE_NAME)
         val projectConfig = ProjectConfig.fromFile(projectConfigPath)

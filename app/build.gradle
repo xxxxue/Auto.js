@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jakewharton.butterknife'
@@ -55,22 +56,22 @@ android {
     flavorDimensions "channel"
     splits {
 
-        // Configures multiple APKs based on ABI.
+        // 根据ABI配置多个APK。
         abi {
 
-            // Enables building multiple APKs per ABI.
+            // 启用每个ABI构建多个APK。
             enable true
 
-            // By default all ABIs are included, so use reset() and include to specify that we only
-            // want APKs for x86 and x86_64.
+           //默认情况下，所有ABI都包含在内，因此请使用reset（）并包含以指定我们只希望
+            // x86和x86_64的APK。
 
-            // Resets the list of ABIs that Gradle should create APKs for to none.
+            // 将Gradle应该为其创建APK的ABI列表重置为无。
             reset()
 
-            // Specifies a list of ABIs that Gradle should create APKs for.
+            // 指定Gradle应该为其创建APK的ABI列表。
             include "x86", "armeabi-v7a"
 
-            // Specifies that we do not want to also generate a universal APK that includes all ABIs.
+            // 指定我们不想同时生成包含所有ABI的通用APK。
             universalApk false
         }
     }

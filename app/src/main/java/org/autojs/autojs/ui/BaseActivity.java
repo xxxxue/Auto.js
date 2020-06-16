@@ -1,9 +1,11 @@
 package org.autojs.autojs.ui;
 
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -12,14 +14,19 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+
 import android.view.Menu;
 import android.view.View;
+import android.widget.Toast;
 
 import com.stardust.app.GlobalAppContext;
+import com.stardust.autojs.runtime.ScriptRuntime;
 import com.stardust.theme.ThemeColorManager;
+import com.stardust.view.accessibility.AccessibilityNotificationObserver;
 
 import org.autojs.autojs.Pref;
 import org.autojs.autojs.R;
+import org.autojs.autojs.autojs.AutoJs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,14 +41,19 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    protected static final int PERMISSION_REQUEST_CODE = 11186;
-    private boolean mShouldApplyDayNightModeForOptionsMenu = true;
+    protected static final int     PERMISSION_REQUEST_CODE                = 11186;
+    private                boolean mShouldApplyDayNightModeForOptionsMenu = true;
+    protected              Context mContext;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
     }
 
+    /**
+     * 套用日夜模式
+     */
     protected void applyDayNightMode() {
         GlobalAppContext.post(() -> {
             if (Pref.isNightModeEnabled()) {
@@ -50,6 +62,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * 设置夜间模式已启用
+     *
+     * @param enabled
+     */
     public void setNightModeEnabled(boolean enabled) {
         if (enabled) {
             getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
@@ -143,4 +160,24 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         return super.onCreateOptionsMenu(menu);
     }
+    //----------------------------------------------
+    //----------------------------------------------
+    //----------------------------------------------
+    //----------------------------------------------
+
+    /**
+     * 原 aj java 底层帮助类
+     */
+   public ScriptRuntime ajHelper = AutoJs.getInstance().getRuntime();
+
+
+    /**
+     * 显示toast消息
+     *
+     * @param msg 要显示的字符串内容
+     */
+    public void showToast(String msg) {
+        Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+    }
+
 }

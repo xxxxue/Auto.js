@@ -104,6 +104,10 @@ public abstract class AutoJs {
         return mApplication;
     }
 
+    /**
+     * 脚本引擎管理器 (只要是一些 引擎操作)
+     * @return
+     */
     public ScriptEngineManager getScriptEngineManager() {
         return mScriptEngineManager;
     }
@@ -179,6 +183,10 @@ public abstract class AutoJs {
         return mAppUtils;
     }
 
+    /**
+     * UI 处理  (主要是 获取Context 与 toast)
+     * @return
+     */
     public UiHandler getUiHandler() {
         return mUiHandler;
     }
@@ -187,10 +195,18 @@ public abstract class AutoJs {
         return mLayoutInspector;
     }
 
+    /**
+     * console 操作 (主要是一些 日志窗口操作 与 日志记录)
+     * @return
+     */
     public GlobalConsole getGlobalConsole() {
         return mGlobalConsole;
     }
 
+    /**
+     * 脚本引擎, (主要是一些 脚本引擎的执行与停止)
+     * @return
+     */
     public ScriptEngineService getScriptEngineService() {
         return mScriptEngineService;
     }

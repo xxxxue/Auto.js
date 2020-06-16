@@ -34,6 +34,9 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
     private var mShell: Shell? = null
     private var mUseShell = false
 
+    /**
+     * 当前package (包名)
+     */
     val latestPackage: String
         get() {
             val compFromShell = mLatestComponentFromShell
@@ -46,6 +49,9 @@ class ActivityInfoProvider(private val context: Context) : AccessibilityDelegate
             return mLatestPackage
         }
 
+    /**
+     * 当前Activity
+     */
     val latestActivity: String
         get() {
             val compFromShell = mLatestComponentFromShell

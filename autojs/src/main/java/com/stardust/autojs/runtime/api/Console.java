@@ -16,6 +16,12 @@ public interface Console {
     @ScriptInterface
     void log(@Nullable Object data, Object... options);
 
+    /**
+     * 调用 Log4j
+     * @param level   Log.INFO   2,3 Debug   4 Info  5 Warn 6 Error 7 Fatal
+     * @param data
+     * @param options
+     */
     @ScriptInterface
     void print(int level, Object data, Object... options);
 

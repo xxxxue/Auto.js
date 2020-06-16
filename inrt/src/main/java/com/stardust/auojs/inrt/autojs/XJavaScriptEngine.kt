@@ -14,6 +14,9 @@ import java.security.GeneralSecurityException
 class XJavaScriptEngine(context: Context) : LoopBasedJavaScriptEngine(context) {
 
 
+    /**
+     *
+     */
     override fun execute(source: ScriptSource, callback: ExecuteCallback?) {
         if (source is JavaScriptFileSource) {
             try {
@@ -28,13 +31,21 @@ class XJavaScriptEngine(context: Context) : LoopBasedJavaScriptEngine(context) {
         super.execute(source, callback)
     }
 
+    /**
+     * 执行
+     */
     private fun execute(file: File): Boolean {
         val bytes = PFiles.readBytes(file.path)
         if (!EncryptedScriptFileHeader.isValidFile(bytes)) {
             return false
         }
         try {
-            super.execute(StringScriptSource(file.name, String(ScriptEncryption.decrypt(bytes, EncryptedScriptFileHeader.BLOCK_SIZE))))
+            super.execute(StringScriptSource(
+                    file.name,
+                    String(
+                            ScriptEncryption.decrypt(bytes, EncryptedScriptFileHeader.BLOCK_SIZE)
+                    )
+            ))
         } catch (e: GeneralSecurityException) {
             e.printStackTrace()
         }

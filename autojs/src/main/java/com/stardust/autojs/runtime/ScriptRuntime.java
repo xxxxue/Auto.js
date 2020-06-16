@@ -130,6 +130,9 @@ public class ScriptRuntime {
     }
 
 
+    /**
+     * app相关
+     */
     @ScriptVariable
     public final AppUtils app;
 
@@ -139,6 +142,9 @@ public class ScriptRuntime {
     @ScriptVariable
     public final SimpleActionAutomator automator;
 
+    /**
+     * 主要是获取 当前包名 与 当前 activity
+     */
     @ScriptVariable
     public final ActivityInfoProvider info;
 
@@ -157,18 +163,33 @@ public class ScriptRuntime {
     @ScriptVariable
     public Loopers loopers;
 
+    /**
+     * 计时器
+     */
     @ScriptVariable
     public Timers timers;
 
+    /**
+     * 获取设备相关信息
+     */
     @ScriptVariable
     public Device device;
 
+    /**
+     * 无障碍通道
+     */
     @ScriptVariable
     public final AccessibilityBridge accessibilityBridge;
 
+    /**
+     * 引擎
+     */
     @ScriptVariable
     public final Engines engines;
 
+    /**
+     * 多线程 相关
+     */
     @ScriptVariable
     public Threads threads;
 
@@ -333,6 +354,10 @@ public class ScriptRuntime {
         }
     }
 
+    /**
+     * 动态申请权限
+     * @param permissions
+     */
     public void requestPermissions(String[] permissions) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             return;
@@ -344,6 +369,10 @@ public class ScriptRuntime {
         Permissions.requestPermissions(context, permissions);
     }
 
+    /**
+     * 加载jar
+     * @param path
+     */
     public void loadJar(String path) {
         path = files.path(path);
         try {
@@ -353,6 +382,10 @@ public class ScriptRuntime {
         }
     }
 
+    /**
+     * 加载dex
+     * @param path
+     */
     public void loadDex(String path) {
         path = files.path(path);
         try {
@@ -362,6 +395,9 @@ public class ScriptRuntime {
         }
     }
 
+    /**
+     * 退出程序
+     */
     public void exit() {
         mThread.interrupt();
         engines.myEngine().forceStop();
@@ -371,6 +407,10 @@ public class ScriptRuntime {
         }
     }
 
+    /**
+     * 退出程序
+     * @param e
+     */
     public void exit(Throwable e) {
         engines.myEngine().uncaughtException(e);
         exit();
@@ -382,6 +422,11 @@ public class ScriptRuntime {
     }
 
 
+    /**
+     * 设置脚本执行的屏幕大小 ( 分辨率等比 缩放,多分辨率适配)
+     * @param width
+     * @param height
+     */
     public void setScreenMetrics(int width, int height) {
         mScreenMetrics.setScreenMetrics(width, height);
     }
@@ -390,6 +435,9 @@ public class ScriptRuntime {
         return mScreenMetrics;
     }
 
+    /**
+     * 确保启用辅助功能
+     */
     public void ensureAccessibilityServiceEnabled() {
         accessibilityBridge.ensureServiceEnabled();
     }
@@ -422,6 +470,10 @@ public class ScriptRuntime {
         ignoresException(ui::recycle);
     }
 
+    /**
+     * 忽略异常
+     * @param r
+     */
     private void ignoresException(Runnable r) {
         try {
             r.run();
@@ -455,6 +507,12 @@ public class ScriptRuntime {
     }
 
 
+    /**
+     * 获取堆栈跟踪
+     * @param e
+     * @param printJavaStackTrace
+     * @return
+     */
     public static String getStackTrace(Throwable e, boolean printJavaStackTrace) {
         String message = e.getMessage();
         StringBuilder scriptTrace = new StringBuilder(message == null ? "" : message + "\n");

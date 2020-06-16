@@ -33,9 +33,8 @@ import java.util.List;
 import ezy.assist.compat.SettingsCompat;
 
 /**
- * Created by Stardust on 2017/12/2.
+ * 获取 设备 相关的信息
  */
-
 public class Device {
 
     public static final int width = ScreenMetrics.getDeviceScreenWidth();
@@ -95,6 +94,10 @@ public class Device {
         mContext = context;
     }
 
+    /**
+     * 取得IMEI
+     * @return
+     */
     @SuppressLint("HardwareIds")
     @Nullable
     public String getIMEI() {
@@ -107,77 +110,141 @@ public class Device {
     }
 
 
+    /**
+     * 获取Android ID
+     * @return
+     */
     @SuppressLint("HardwareIds")
     public String getAndroidId() {
         return Settings.Secure.getString(mContext.getContentResolver(), Settings.Secure.ANDROID_ID);
     }
 
+    /**
+     * 获得亮度
+     * @return
+     * @throws Settings.SettingNotFoundException
+     */
     public int getBrightness() throws Settings.SettingNotFoundException {
         return Settings.System.getInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
     }
 
+    /**
+     * 获取亮度模式
+     * @return
+     * @throws Settings.SettingNotFoundException
+     */
     public int getBrightnessMode() throws Settings.SettingNotFoundException {
         return Settings.System.getInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE);
     }
 
+    /**
+     * 设置亮度
+     * @param b
+     * @throws Settings.SettingNotFoundException
+     */
     public void setBrightness(int b) throws Settings.SettingNotFoundException {
         checkWriteSettingsPermission();
         Settings.System.putInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, b);
     }
 
+    /**
+     * 设置亮度模式
+     * @param b
+     * @throws Settings.SettingNotFoundException
+     */
     public void setBrightnessMode(int b) throws Settings.SettingNotFoundException {
         checkWriteSettingsPermission();
         Settings.System.putInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, b);
     }
 
+    /**
+     * 获取音乐音量
+     * @return
+     */
     public int getMusicVolume() {
         return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .getStreamVolume(AudioManager.STREAM_MUSIC);
     }
 
+    /**
+     * 获取通知 音量
+     * @return
+     */
     public int getNotificationVolume() {
         return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .getStreamVolume(AudioManager.STREAM_NOTIFICATION);
     }
 
+    /**
+     * 获取警报音量
+     * @return
+     */
     public int getAlarmVolume() {
         return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .getStreamVolume(AudioManager.STREAM_ALARM);
     }
 
+    /**
+     * 获得音乐最大音量
+     * @return
+     */
     public int getMusicMaxVolume() {
         return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .getStreamMaxVolume(AudioManager.STREAM_MUSIC);
     }
 
+    /**
+     * 获取通知最大音量
+     * @return
+     */
     public int getNotificationMaxVolume() {
         return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .getStreamMaxVolume(AudioManager.STREAM_NOTIFICATION);
     }
 
+    /**
+     * 获取警报最大音量
+     * @return
+     */
     public int getAlarmMaxVolume() {
         return ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .getStreamMaxVolume(AudioManager.STREAM_ALARM);
     }
 
+    /**
+     * 设置音乐音量
+     * @param i
+     */
     public void setMusicVolume(int i) {
         checkWriteSettingsPermission();
         ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .setStreamVolume(AudioManager.STREAM_MUSIC, i, 0);
     }
 
+    /**
+     * 设置警报音量
+     * @param i
+     */
     public void setAlarmVolume(int i) {
         checkWriteSettingsPermission();
         ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .setStreamVolume(AudioManager.STREAM_ALARM, i, 0);
     }
 
+    /**
+     * 设置通知 音量
+     * @param i
+     */
     public void setNotificationVolume(int i) {
         checkWriteSettingsPermission();
         ((AudioManager) getSystemService(Context.AUDIO_SERVICE))
                 .setStreamVolume(AudioManager.STREAM_NOTIFICATION, i, 0);
     }
 
+    /**
+     * 获取电池
+     * @return
+     */
     public float getBattery() {
         Intent batteryIntent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         if (batteryIntent == null) {
@@ -189,6 +256,10 @@ public class Device {
         return Math.round(battery * 10) / 10;
     }
 
+    /**
+     * 获取总内存
+     * @return
+     */
     public long getTotalMem() {
         ActivityManager activityManager = getSystemService(Context.ACTIVITY_SERVICE);
         ActivityManager.MemoryInfo info = new ActivityManager.MemoryInfo();
@@ -196,6 +267,10 @@ public class Device {
         return info.totalMem;
     }
 
+    /**
+     * 获取可用的 内存
+     * @return
+     */
     public long getAvailMem() {
         ActivityManager activityManager = getSystemService(Context.ACTIVITY_SERVICE);
         ActivityManager.MemoryInfo info = new ActivityManager.MemoryInfo();
@@ -203,6 +278,10 @@ public class Device {
         return info.availMem;
     }
 
+    /**
+     * 是否 正在充电
+     * @return
+     */
     public boolean isCharging() {
         Intent intent = mContext.registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
         if (intent == null) {
@@ -217,12 +296,20 @@ public class Device {
         mWakeLock.acquire(timeout);
     }
 
+    /**
+     * 保持清醒
+     * @param flags
+     */
     @SuppressLint("WakelockTimeout")
     public void keepAwake(int flags) {
         checkWakeLock(flags);
         mWakeLock.acquire();
     }
 
+    /**
+     * 屏幕是否开启
+     * @return
+     */
     public boolean isScreenOn() {
         //按照API文档来说不应该使用PowerManager.isScreenOn()，但是，isScreenOn()和实际不一致的情况通常只会出现在安卓智能手表的类似设备上
         //因此这里仍然使用PowerManager.isScreenOn()
@@ -233,32 +320,56 @@ public class Device {
         //}
     }
 
+    /**
+     * 如果需要的话 醒来
+     */
     public void wakeUpIfNeeded() {
         if (!isScreenOn()) {
             wakeUp();
         }
     }
 
+    /**
+     * 醒来
+     */
     public void wakeUp() {
         keepScreenOn(200);
     }
 
+    /**
+     * 保持萤幕开启
+     */
     public void keepScreenOn() {
         keepAwake(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP);
     }
 
+    /**
+     * 保持萤幕开启
+     * @param timeout
+     */
     public void keepScreenOn(long timeout) {
         keepAwake(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, timeout);
     }
 
+    /**
+     * 保持屏幕暗淡
+     */
     public void keepScreenDim() {
         keepAwake(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP);
     }
 
+    /**
+     * 保持屏幕暗淡
+     * @param timeout
+     */
     public void keepScreenDim(long timeout) {
         keepAwake(PowerManager.SCREEN_DIM_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, timeout);
     }
 
+    /**
+     * 检查唤醒锁
+     * @param flags
+     */
     private void checkWakeLock(int flags) {
         if (mWakeLock == null || flags != mWakeLockFlag) {
             cancelKeepingAwake();
@@ -266,20 +377,32 @@ public class Device {
         }
     }
 
+    /**
+     * 取消保持清醒
+     */
     public void cancelKeepingAwake() {
         if (mWakeLock != null && mWakeLock.isHeld())
             mWakeLock.release();
     }
 
+    /**
+     * 震动
+     * @param millis
+     */
     public void vibrate(long millis) {
         ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).vibrate(millis);
     }
 
+    /**
+     * 取消振动
+     */
     public void cancelVibration() {
         ((Vibrator) getSystemService(Context.VIBRATOR_SERVICE)).cancel();
     }
 
-
+    /**
+     * 检查写入设置权限
+     */
     private void checkWriteSettingsPermission() {
         if (SettingsCompat.canWriteSettings(mContext)) {
             return;
@@ -289,6 +412,9 @@ public class Device {
     }
 
 
+    /**
+     * 检查阅读电话状态权限
+     */
     private void checkReadPhoneStatePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (mContext.checkSelfPermission(Manifest.permission.READ_PHONE_STATE)
@@ -299,7 +425,13 @@ public class Device {
     }
 
 
-    // just to avoid warning of null pointer to make android studio happy..
+    /**
+     * 获得系统服务
+     * @param service
+     * @param <T>
+     * @return
+     */
+    // 只是为了避免出现空指针警告，以使android studio感到高兴。
     @NonNull
     @SuppressWarnings("unchecked")
     private <T> T getSystemService(String service) {
@@ -312,6 +444,11 @@ public class Device {
 
     private static final String FAKE_MAC_ADDRESS = "02:00:00:00:00:00";
 
+    /**
+     * 获取Mac地址
+     * @return
+     * @throws Exception
+     */
     @SuppressLint("HardwareIds")
     public String getMacAddress() throws Exception {
         WifiManager wifiMan = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -336,6 +473,11 @@ public class Device {
         return mac;
     }
 
+    /**
+     * 通过界面获取Mac
+     * @return
+     * @throws SocketException
+     */
     private static String getMacByInterface() throws SocketException {
         List<NetworkInterface> networkInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
         for (NetworkInterface networkInterface : networkInterfaces) {
@@ -359,6 +501,11 @@ public class Device {
         return null;
     }
 
+    /**
+     * 通过文件获取Mac
+     * @return
+     * @throws Exception
+     */
     private static String getMacByFile() throws Exception {
         try {
             return PFiles.read("/sys/class/net/wlan0/address");

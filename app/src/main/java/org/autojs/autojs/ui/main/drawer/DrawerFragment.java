@@ -102,6 +102,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     View mShadow;
     @ViewById(R.id.default_cover)
     View mDefaultCover;
+
+    /**
+     * 左侧抽屉 List 列表
+     */
     @ViewById(R.id.drawer_menu)
     RecyclerView mDrawerMenu;
 
@@ -162,6 +166,9 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
     }
 
+    /**
+     * 初始化 抽屉List 菜单 子项
+     */
     private void initMenuItems() {
         mDrawerMenuAdapter = new DrawerMenuAdapter(new ArrayList<>(Arrays.asList(
                 new DrawerMenuGroup(R.string.text_service),
@@ -186,6 +193,9 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     }
 
 
+    /**
+     *  点击 头像 跳到 登陆界面
+     */
     @SuppressLint("CheckResult")
     @Click(R.id.avatar)
     void loginOrShowUserInfo() {
@@ -222,6 +232,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
     }
 
+    /**
+     * 转到通知服务设置
+     * @param holder
+     */
     void goToNotificationServiceSettings(DrawerMenuItemViewHolder holder) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) {
             return;
@@ -233,6 +247,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
     }
 
+    /**
+     * 转到使用情况统计设置
+     * @param holder
+     */
     void goToUsageStatsSettings(DrawerMenuItemViewHolder holder) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return;
@@ -254,6 +272,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
     }
 
+    /**
+     * 显示或关闭浮动窗口
+     * @param holder
+     */
     void showOrDismissFloatingWindow(DrawerMenuItemViewHolder holder) {
         boolean isFloatingWindowShowing = FloatyWindowManger.isCircularMenuShowing();
         boolean checked = holder.getSwitchCompat().isChecked();
@@ -268,14 +290,25 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
     }
 
+    /**
+     * 打开主题颜色设置
+     * @param holder
+     */
     void openThemeColorSettings(DrawerMenuItemViewHolder holder) {
         SettingsActivity.selectThemeColor(getActivity());
     }
 
+    /**
+     * 切换夜间模式
+     * @param holder
+     */
     void toggleNightMode(DrawerMenuItemViewHolder holder) {
         ((BaseActivity) getActivity()).setNightModeEnabled(holder.getSwitchCompat().isChecked());
     }
 
+    /**
+     * 如果需要，通过Root启用辅助功能
+     */
     @SuppressLint("CheckResult")
     private void enableAccessibilityServiceByRootIfNeeded() {
         Observable.fromCallable(() -> Pref.shouldEnableAccessibilityServiceByRoot() && !isAccessibilityServiceEnabled())
@@ -288,6 +321,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
 
     }
 
+    /**
+     * 连接或断开与远程的连接
+     * @param holder
+     */
     void connectOrDisconnectToRemote(DrawerMenuItemViewHolder holder) {
         boolean checked = holder.getSwitchCompat().isChecked();
         boolean connected = DevPluginService.getInstance().isConnected();
@@ -299,6 +336,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     }
 
 
+    /**
+     * 切换前台服务
+     * @param holder
+     */
     private void toggleForegroundService(DrawerMenuItemViewHolder holder) {
         boolean checked = holder.getSwitchCompat().isChecked();
         if (checked) {
@@ -308,7 +349,9 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
     }
 
-
+    /**
+     * 输入远程主机
+     */
     private void inputRemoteHost() {
         String host = Pref.getServerAddressOrDefault(WifiTool.getRouterIp(getActivity()));
         new MaterialDialog.Builder(getActivity())
@@ -327,12 +370,20 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
                 .show();
     }
 
+    /**
+     * 连接异常
+     * @param e
+     */
     private void onConnectException(Throwable e) {
         setChecked(mConnectionItem, false);
         Toast.makeText(GlobalAppContext.get(), getString(R.string.error_connect_to_remote, e.getMessage()),
                 Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * 检查更新
+     * @param holder
+     */
     void checkForUpdates(DrawerMenuItemViewHolder holder) {
         setProgress(mCheckForUpdatesItem, true);
         VersionService.getInstance().checkForUpdates()
@@ -362,6 +413,9 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     }
 
 
+    /**
+     * 恢复 事件
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -369,6 +423,9 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         syncUserInfo();
     }
 
+    /**
+     * 同步用户信息
+     */
     private void syncUserInfo() {
         NodeBB.getInstance().getRetrofit()
                 .create(UserApi.class)
@@ -381,6 +438,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
                 });
     }
 
+    /**
+     * 设置用户信息
+     * @param user
+     */
     private void setUpUserInfo(@Nullable User user) {
         if (mUserName == null || mAvatar == null)
             return;
@@ -394,6 +455,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         setCoverImage(user);
     }
 
+    /**
+     * 设置封面图片
+     * @param user
+     */
     private void setCoverImage(User user) {
         if (mDefaultCover == null || mShadow == null || mHeaderView == null)
             return;
@@ -413,6 +478,9 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
     }
 
+    /**
+     * 同步开关状态
+     */
     private void syncSwitchState() {
         setChecked(mAccessibilityServiceItem, AccessibilityServiceTool.isAccessibilityServiceEnabled(getActivity()));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -423,6 +491,9 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
     }
 
+    /**
+     * 启用无障碍服务
+     */
     private void enableAccessibilityService() {
         if (!Pref.shouldEnableAccessibilityServiceByRoot()) {
             AccessibilityServiceTool.goToAccessibilitySetting();
@@ -431,6 +502,9 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         enableAccessibilityServiceByRoot();
     }
 
+    /**
+     * 通过Root 启用无障碍服务
+     */
     private void enableAccessibilityServiceByRoot() {
         setProgress(mAccessibilityServiceItem, true);
         Observable.fromCallable(() -> AccessibilityServiceTool.enableAccessibilityServiceByRootAndWaitFor(4000))
@@ -446,11 +520,19 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     }
 
 
+    /**
+     * 循环菜单状态更改
+     * @param event
+     */
     @Subscribe
     public void onCircularMenuStateChange(CircularMenu.StateChangeEvent event) {
         setChecked(mFloatingWindowItem, event.getCurrentState() != CircularMenu.STATE_CLOSED);
     }
 
+    /**
+     * 社区页面可见性更改
+     * @param change
+     */
     @Subscribe
     public void onCommunityPageVisibilityChange(CommunityFragment.VisibilityChange change) {
         if (change.visible) {
@@ -461,6 +543,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         mDrawerMenu.scrollToPosition(0);
     }
 
+    /**
+     * 登录状态更改时
+     * @param change
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onLoginStateChange(UserService.LoginStateChange change) {
         syncUserInfo();
@@ -470,6 +556,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     }
 
 
+    /**
+     * 在 抽屉打开时
+     * @param event
+     */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onDrawerOpen(MainActivity.DrawerOpenEvent event) {
         if (mCommunityDrawerMenu.isShown()) {
@@ -477,6 +567,9 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
         }
     }
 
+    /**
+     * 显示稳定模式提示（如果需要）
+     */
     private void showStableModePromptIfNeeded() {
         new NotAskAgainDialog.Builder(getContext(), "DrawerFragment.stable_mode")
                 .title(R.string.text_stable_mode)
@@ -486,6 +579,9 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     }
 
 
+    /**
+     * 摧毁
+     */
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -494,6 +590,10 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     }
 
 
+    /**
+     * 显示 toast 信息
+     * @param text
+     */
     private void showMessage(CharSequence text) {
         if (getContext() == null)
             return;
@@ -501,16 +601,30 @@ public class DrawerFragment extends androidx.fragment.app.Fragment {
     }
 
 
+    /**
+     * 设定进度
+     * @param item
+     * @param progress
+     */
     private void setProgress(DrawerMenuItem item, boolean progress) {
         item.setProgress(progress);
         mDrawerMenuAdapter.notifyItemChanged(item);
     }
 
+    /**
+     * 设置为已检查
+     * @param item
+     * @param checked
+     */
     private void setChecked(DrawerMenuItem item, boolean checked) {
         item.setChecked(checked);
         mDrawerMenuAdapter.notifyItemChanged(item);
     }
 
+    /**
+     * 是否启用了辅助功能
+     * @return
+     */
     private boolean isAccessibilityServiceEnabled() {
         return AccessibilityServiceTool.isAccessibilityServiceEnabled(getActivity());
     }

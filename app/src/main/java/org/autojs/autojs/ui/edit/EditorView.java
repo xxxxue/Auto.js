@@ -90,12 +90,12 @@ import static org.autojs.autojs.model.script.Scripts.EXTRA_EXCEPTION_MESSAGE;
 @EViewGroup(R.layout.editor_view)
 public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintClickListener, FunctionsKeyboardView.ClickCallback, ToolbarFragment.OnMenuItemClickListener {
 
-    public static final String EXTRA_PATH = "path";
-    public static final String EXTRA_NAME = "name";
-    public static final String EXTRA_CONTENT = "content";
-    public static final String EXTRA_READ_ONLY = "readOnly";
+    public static final String EXTRA_PATH         = "path";
+    public static final String EXTRA_NAME         = "name";
+    public static final String EXTRA_CONTENT      = "content";
+    public static final String EXTRA_READ_ONLY    = "readOnly";
     public static final String EXTRA_SAVE_ENABLED = "saveEnabled";
-    public static final String EXTRA_RUN_ENABLED = "runEnabled";
+    public static final String EXTRA_RUN_ENABLED  = "runEnabled";
 
     @ViewById(R.id.editor)
     CodeEditor mEditor;
@@ -124,14 +124,14 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
     @ViewById(R.id.drawer_layout)
     DrawerLayout mDrawerLayout;
 
-    private String mName;
-    private Uri mUri;
-    private boolean mReadOnly = false;
-    private int mScriptExecutionId;
-    private AutoCompletion mAutoCompletion;
-    private Theme mEditorTheme;
+    private String                  mName;
+    private Uri                     mUri;
+    private boolean                 mReadOnly              = false;
+    private int                     mScriptExecutionId;
+    private AutoCompletion          mAutoCompletion;
+    private Theme                   mEditorTheme;
     private FunctionsKeyboardHelper mFunctionsKeyboardHelper;
-    private BroadcastReceiver mOnRunFinishedReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver       mOnRunFinishedReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (ACTION_ON_EXECUTION_FINISHED.equals(intent.getAction())) {
@@ -153,10 +153,10 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         }
     };
 
-    private SparseBooleanArray mMenuItemStatus = new SparseBooleanArray();
-    private String mRestoredText;
-    private NormalToolbarFragment mNormalToolbar = new NormalToolbarFragment_();
-    private boolean mDebugging = false;
+    private SparseBooleanArray    mMenuItemStatus = new SparseBooleanArray();
+    private String                mRestoredText;
+    private NormalToolbarFragment mNormalToolbar  = new NormalToolbarFragment_();
+    private boolean               mDebugging      = false;
 
     public EditorView(Context context) {
         super(context);
@@ -277,18 +277,27 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         return mMenuItemStatus.get(id, defValue);
     }
 
+    /**
+     * 页面加载完后 初始化一些数据
+     */
     @AfterViews
     void init() {
         //setTheme(Theme.getDefault(getContext()));
         setUpEditor();
+        //
         setUpInputMethodEnhancedBar();
         setUpFunctionsKeyboard();
+
+        //禁用  顶部 保存按钮
         setMenuItemStatus(R.id.save, false);
+        //文档 浏览器初始化
         mDocsWebView.getWebView().getSettings().setDisplayZoomControls(true);
         mDocsWebView.getWebView().loadUrl(Pref.getDocumentationUrl() + "index.html");
+        //初始化 皮肤
         Themes.getCurrent(getContext())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::setTheme);
+        //初始化 普通工具栏
         initNormalToolbar();
     }
 
@@ -307,6 +316,9 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         }
     }
 
+    /**
+     * 设置 方法关键字面板
+     */
     private void setUpFunctionsKeyboard() {
         mFunctionsKeyboardHelper = FunctionsKeyboardHelper.with((Activity) getContext())
                 .setContent(mEditor)
@@ -317,6 +329,9 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         mFunctionsKeyboard.setClickCallback(this);
     }
 
+    /**
+     * 设置 输入法 增强条
+     */
     private void setUpInputMethodEnhancedBar() {
         mSymbolBar.setCodeCompletions(Symbols.getSymbols());
         mCodeCompletionBar.setOnHintClickListener(this);
@@ -326,6 +341,9 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
     }
 
 
+    /**
+     * 设置编辑器
+     */
     private void setUpEditor() {
         mEditor.getCodeEditText().addTextChangedListener(new SimpleTextWatcher(s -> {
             setMenuItemStatus(R.id.save, mEditor.isTextChanged());
@@ -336,6 +354,12 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         mEditor.getCodeEditText().setTextSize(Pref.getEditorTextSize((int) ViewUtils.pxToSp(getContext(), mEditor.getCodeEditText().getTextSize())));
     }
 
+    /**
+     * 自动补全
+     *
+     * @param line
+     * @param cursor
+     */
     private void autoComplete(String line, int cursor) {
         mAutoCompletion.onCursorChange(line, cursor);
     }
@@ -344,6 +368,11 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         return mDebugBar;
     }
 
+    /**
+     * 设置 主题皮肤
+     *
+     * @param theme
+     */
     public void setTheme(Theme theme) {
         mEditorTheme = theme;
         mEditor.setTheme(theme);
@@ -370,50 +399,68 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
     @Override
     public void onToolbarMenuItemClick(int id) {
         switch (id) {
-            case R.id.run:
+
+            case R.id.run://运行
                 runAndSaveFileIfNeeded();
                 break;
-            case R.id.save:
+            case R.id.save://保存
                 saveFile();
                 break;
-            case R.id.undo:
+            case R.id.undo://撤销
                 undo();
                 break;
-            case R.id.redo:
+            case R.id.redo://重做
                 redo();
                 break;
-            case R.id.replace:
+            case R.id.replace://替换
                 replace();
                 break;
-            case R.id.find_next:
+            case R.id.find_next://查找下一个
                 findNext();
                 break;
-            case R.id.find_prev:
+            case R.id.find_prev://查找上一个
                 findPrev();
                 break;
-            case R.id.cancel_search:
+            case R.id.cancel_search://取消搜索
                 cancelSearch();
                 break;
         }
     }
 
+    /**
+     * 编辑器_运行按钮 触发  (运行并保存文件（如果需要）)
+     */
     @SuppressLint("CheckResult")
     public void runAndSaveFileIfNeeded() {
+
         save().observeOn(AndroidSchedulers.mainThread())
-                .subscribe(s -> run(true), Observers.toastMessage());
+                .subscribe
+                        (
+                                s -> run(true), Observers.toastMessage()
+                        );
     }
 
+    /**
+     * 开始运行脚本
+     *
+     * @param showMessage
+     * @return
+     */
     public ScriptExecution run(boolean showMessage) {
         if (showMessage) {
             Snackbar.make(this, R.string.text_start_running, Snackbar.LENGTH_SHORT).show();
         }
         // TODO: 2018/10/24
         ScriptExecution execution = Scripts.INSTANCE.runWithBroadcastSender(new File(mUri.getPath()));
+
         if (execution == null) {
             return null;
         }
+
         mScriptExecutionId = execution.getId();
+        //禁用 运行按钮
         setMenuItemStatus(R.id.run, false);
+
         return execution;
     }
 
@@ -426,6 +473,11 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         mEditor.redo();
     }
 
+    /**
+     * 编辑器_保存按钮 触发
+     *
+     * @return
+     */
     public Observable<String> save() {
         String path = mUri.getPath();
         PFiles.move(path, path + ".bak");
@@ -439,6 +491,9 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
                 });
     }
 
+    /**
+     * 强制停止
+     */
     public void forceStop() {
         doWithCurrentEngine(ScriptEngine::forceStop);
     }
@@ -594,6 +649,9 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         mDebugging = true;
     }
 
+    /**
+     * 退出 Debug
+     */
     public void exitDebugging() {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         Fragment fragment = fragmentManager.findFragmentById(R.id.toolbar_menu);
@@ -607,18 +665,36 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         mDebugging = false;
     }
 
+    /**
+     * 显示错误信息
+     *
+     * @param msg
+     */
     private void showErrorMessage(String msg) {
         Snackbar.make(EditorView.this, getResources().getString(R.string.text_error) + ": " + msg, Snackbar.LENGTH_LONG)
                 .setAction(R.string.text_detail, v -> LogActivity_.intent(getContext()).start())
                 .show();
     }
 
+    /**
+     * 在 底部提示 上单击
+     *
+     * @param completions
+     * @param pos
+     */
     @Override
     public void onHintClick(CodeCompletions completions, int pos) {
         CodeCompletion completion = completions.get(pos);
+        //插入字符
         mEditor.insert(completion.getInsertText());
     }
 
+    /**
+     * 提示上长按  搜索帮助文档
+     *
+     * @param completions
+     * @param pos
+     */
     @Override
     public void onHintLongClick(CodeCompletions completions, int pos) {
         CodeCompletion completion = completions.get(pos);
@@ -627,6 +703,12 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         showManual(completion.getUrl(), completion.getHint());
     }
 
+    /**
+     * 显示 帮助 手册
+     *
+     * @param url
+     * @param title
+     */
     private void showManual(String url, String title) {
         String absUrl = Pref.getDocumentationUrl() + url;
         new ManualDialog(getContext())
@@ -639,11 +721,22 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
                 .show();
     }
 
+    /**
+     * 模块上单击   搜索帮助文档
+     *
+     * @param module
+     */
     @Override
     public void onModuleLongClick(Module module) {
         showManual(module.getUrl(), module.getName());
     }
 
+    /**
+     * 属性上 单击 插入内容到 编辑框中
+     *
+     * @param m
+     * @param property
+     */
     @Override
     public void onPropertyClick(Module m, Property property) {
         String p = property.getKey();
@@ -661,6 +754,12 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         mFunctionsKeyboardHelper.hideFunctionsLayout(true);
     }
 
+    /**
+     * 属性上 长按  搜索 帮助文档
+     *
+     * @param m
+     * @param property
+     */
     @Override
     public void onPropertyLongClick(Module m, Property property) {
         if (TextUtils.isEmpty(property.getUrl())) {
@@ -698,6 +797,9 @@ public class EditorView extends FrameLayout implements CodeCompletionBar.OnHintC
         setMenuItemStatus(R.id.run, mScriptExecutionId == ScriptExecution.NO_ID);
     }
 
+    /**
+     * 销毁
+     */
     public void destroy() {
         mEditor.destroy();
         mAutoCompletion.shutdown();
